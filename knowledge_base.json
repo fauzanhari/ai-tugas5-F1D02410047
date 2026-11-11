@@ -1,0 +1,152 @@
+{
+  "judul": "Sistem Pakar Identifikasi Awal Gangguan Koneksi WiFi pada Windows",
+  "metode": "Forward Chaining",
+  "batas": "Basis pengetahuan disusun dengan merangkum panduan pemecahan masalah koneksi WiFi Microsoft Support untuk Windows 10/11 serta dokumentasi troubleshooting WiFi dan DHCP Cisco. Sistem ini hanya membantu identifikasi awal berdasarkan gejala yang dilaporkan pengguna, bukan alat diagnosis jaringan yang memeriksa perangkat secara langsung. Hasilnya merupakan saran pemeriksaan awal, bukan keputusan akhir. Kondisi jaringan nyata dapat dipengaruhi konfigurasi router, ISP, perangkat, sistem operasi, dan kebijakan jaringan yang tidak seluruhnya dicakup oleh aturan.",
+  "sumber": {
+    "S1": {
+      "judul": "Memperbaiki masalah koneksi Wi-Fi di Windows",
+      "penerbit": "Microsoft Support",
+      "url": "https://support.microsoft.com/id-id/windows/experience/connectivity-networking/fix-wi-fi-connection-issues-in-windows",
+      "diakses": "9 November 2026",
+      "cakupan": "Status koneksi WiFi, adaptor jaringan, alamat IP 169.254.x.x, DNS, sinyal, dan pemeriksaan perangkat lain."
+    },
+    "S2": {
+      "judul": "Troubleshoot WiFi connections",
+      "penerbit": "Cisco Catalyst SD-WAN Troubleshooting Guide",
+      "url": "https://www.cisco.com/c/en/us/td/docs/routers/sdwan/troubleshooting/guide/troubleshooting-guide/troubleshooting-tools-methods.html",
+      "diakses": "9 November 2026",
+      "cakupan": "Pemeriksaan SSID, alamat IP klien, DHCP, gateway default, DNS, dan masalah koneksi internet."
+    },
+    "S3": {
+      "judul": "Troubleshoot DHCP Client Connectivity Issue on a Cisco 9800 WLC",
+      "penerbit": "Cisco Support",
+      "url": "https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-80-wireless-controller/221973-troubleshoot-dhcp-client-connectivity-is.html",
+      "diakses": "9 November 2026",
+      "cakupan": "Keterjangkauan server DHCP, ketersediaan alamat pada DHCP scope, konfigurasi IP, gateway, dan DNS."
+    }
+  },
+  "pertanyaan": [
+    {
+      "id": "wifi_terhubung",
+      "teks": "Apakah perangkat sudah terhubung ke jaringan WiFi (SSID)?"
+    },
+    {
+      "id": "ip_169",
+      "teks": "Apakah alamat IPv4 perangkat diawali 169.254 (misalnya 169.254.x.x)?"
+    },
+    {
+      "id": "dhcp_tidak_tersedia",
+      "teks": "Apakah server DHCP router tidak aktif/tidak terjangkau atau pool alamat IP diduga habis?"
+    },
+    {
+      "id": "ip_valid",
+      "teks": "Apakah perangkat sudah memperoleh alamat IP yang valid dari jaringan?"
+    },
+    {
+      "id": "internet_tidak_akses",
+      "teks": "Apakah WiFi terhubung tetapi internet tidak dapat diakses?"
+    },
+    {
+      "id": "ping_gateway_berhasil",
+      "teks": "Apakah perangkat berhasil melakukan ping ke default gateway/router?"
+    },
+    {
+      "id": "dns_ping_gagal",
+      "teks": "Apakah alamat server DNS tidak dapat dijangkau atau pengujian DNS gagal?"
+    },
+    {
+      "id": "internet_lambat",
+      "teks": "Apakah koneksi internet terasa lambat?"
+    },
+    {
+      "id": "sinyal_lemah",
+      "teks": "Apakah sinyal WiFi lemah atau perangkat jauh/terhalang dari router?"
+    },
+    {
+      "id": "opsi_wifi_hilang",
+      "teks": "Apakah pilihan/tombol WiFi hilang dari pengaturan Windows?"
+    },
+    {
+      "id": "adapter_nonaktif",
+      "teks": "Apakah adaptor WiFi terlihat nonaktif di Device Manager atau pengaturan jaringan?"
+    },
+    {
+      "id": "driver_bermasalah",
+      "teks": "Apakah driver adaptor jaringan hilang/bermasalah menurut Device Manager?"
+    }
+  ],
+  "aturan": [
+    {
+      "id": "R1",
+      "jika": [
+        "wifi_terhubung",
+        "ip_169"
+      ],
+      "mode": "dan",
+      "maka": "indikasi klien gagal memperoleh alamat IP dari DHCP",
+      "sumber": "S1"
+    },
+    {
+      "id": "R2",
+      "jika": [
+        "indikasi klien gagal memperoleh alamat IP dari DHCP",
+        "dhcp_tidak_tersedia"
+      ],
+      "mode": "dan",
+      "maka": "kemungkinan gangguan layanan DHCP atau ketersediaan pool alamat IP",
+      "sumber": "S2"
+    },
+    {
+      "id": "R3",
+      "jika": [
+        "wifi_terhubung",
+        "ip_valid",
+        "internet_tidak_akses"
+      ],
+      "mode": "dan",
+      "maka": "koneksi ke jaringan lokal tersedia tetapi akses internet gagal",
+      "sumber": "S1"
+    },
+    {
+      "id": "R4",
+      "jika": [
+        "koneksi ke jaringan lokal tersedia tetapi akses internet gagal",
+        "ping_gateway_berhasil",
+        "dns_ping_gagal"
+      ],
+      "mode": "dan",
+      "maka": "indikasi masalah konfigurasi atau layanan DNS",
+      "sumber": "S1"
+    },
+    {
+      "id": "R5",
+      "jika": [
+        "internet_lambat",
+        "sinyal_lemah"
+      ],
+      "mode": "dan",
+      "maka": "indikasi kualitas sinyal WiFi lemah atau terhalang",
+      "sumber": "S1"
+    },
+    {
+      "id": "R6",
+      "jika": [
+        "opsi_wifi_hilang",
+        "adapter_nonaktif"
+      ],
+      "mode": "dan",
+      "maka": "adaptor WiFi kemungkinan dalam keadaan nonaktif",
+      "sumber": "S1"
+    },
+    {
+      "id": "R7",
+      "jika": [
+        "adaptor WiFi kemungkinan dalam keadaan nonaktif",
+        "driver_bermasalah"
+      ],
+      "mode": "dan",
+      "maka": "perlu pemeriksaan atau pemasangan ulang driver adaptor jaringan",
+      "sumber": "S1"
+    }
+  ]
+}
